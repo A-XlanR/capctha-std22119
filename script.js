@@ -1,93 +1,58 @@
-document
-  .getElementById("captchaForm")
-  .addEventListener("submit", async function (e) {
-    e.preventDefault();
+const form = document.getElementById("captchaForm");
+const logDiv = document.getElementById("log");
 
-    const N = parseInt(document.getElementById("numberInput").value, 10);
-    const logDiv = document.getElementById("log");
-    logDiv.textContent = "";
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const numberInput = document.getElementById("numberInput");
+  const N = parseInt(numberInput.value, 10);
 
-    for (let i = 1; i <= N; i++) {
-      try {
-        // Delay before each request
-        await delay(1000); 
-
-        const response = await performRequest(
-          `https://api.prod.jcloudify.com/whoami`,
-          i
-        );
-        logDiv.textContent += `${i}. ${
-          response.status === 200 ? "OK" : "Forbidden"
-        }\n`;
-      } catch (error) {
-        logDiv.textContent += `${i}. Une erreur est survenue : ${error.message}\n`;
-        console.error("Request error:", error); // Log the error to the console for debugging
-        break; // Exit the loop if there's an error
-      }
-    }
-  });
-
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function performRequest(url, i) {
-  try {
-    const response = await fetch(url);
-    if (response.status === 403) {
-      // Captcha challenge needs to be handled
-      return handleCaptchaChallenge(url, i);
-    }
-    return response;
-  } catch (error) {
-    throw error; // Re-throw the error to be handled by the calling function
+  if (isNaN(N) || N < 1 || N > 1000) {
+    logDiv.textContent = "Veuillez entrer un nombre valide entre 1 et 1000.";
+    return;
   }
-}
 
-async function handleCaptchaChallenge(url, i) {
-  return new Promise((resolve, reject) => {
-    if (
-      typeof window._AWSWAF === "undefined" ||
-      typeof window._AWSWAF.showCaptchaChallenge !== "function" ||
-      typeof window._AWSWAF.onCaptchaSolved !== "function"
-    ) {
-      console.error(
-        "AWS WAF Captcha SDK not properly loaded. Check your script tag."
-      );
-      reject(new Error("AWS WAF Captcha SDK not loaded")); // Reject the promise if the SDK is not available
-      return;
-    }
+  // Cache le formulaire et affiche la séquence
+  form.style.display = "none";
+  logDiv.textContent = "";
 
-    window._AWSWAF.showCaptchaChallenge();
-    window._AWSWAF.onCaptchaSolved(async (token) => {
-      try {
-        const responseWithToken = await fetch(url, {
-          headers: {
-            "x-captcha-passed": token,
-          },
-        });
-        if (responseWithToken.ok) {
-          resolve(responseWithToken);
-        } else {
-          console.error(
-            "Request with token failed:",
-            responseWithToken.status,
-            responseWithToken.statusText
-          );
-          // Retry without token to trigger a new captcha if necessary.
-          resolve(performRequest(url, i));
-        }
-      } catch (error) {
-        reject(error);
+  for (let i = 1; i <= N; i++) {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const response = await fetch("https://api.prod.jcloudify.com/whoami", {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        logDiv.textContent += `${i}. Forbidden\n`;
+      } else if (response.status === 403) {
+        logDiv.textContent += `${i}. CAPTCHA nécessaire, en attente...\n`;
+        await handleCaptcha();
+
+        logDiv.textContent += `${i}. CAPTCHA résolu\n`;
+      } else {
+        logDiv.textContent += `${i}. Erreur: ${response.statusText}\n`;
       }
-    });
-    window._AWSWAF.onCaptchaExpired(() => {
-      console.log("Captcha expired");
-      resolve(performRequest(url, i));
-    });
-    window._AWSWAF.onCaptchaFailed(() => {
-      console.log("Captcha failed");
-      resolve(performRequest(url, i));
+    } catch (error) {
+      logDiv.textContent += `${i}. Erreur: ${error.message}\n`;
+    }
+  }
+});
+
+async function handleCaptcha() {
+  return new Promise((resolve) => {
+    window.__AWSCAPTCHA__.run({
+      callback: () => {
+        resolve();
+      },
+      onError: (err) => {
+        logDiv.textContent += `Erreur CAPTCHA: ${err.message}\n`;
+        resolve();
+      },
     });
   });
 }
