@@ -1,17 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Forbidden Sequence Generator</title>
-    <script type="text/javascript" src="https://b82b1763d1c3.eu-west-3.captcha-sdk.awswaf.com/b82b1763d1c3/jsapi.js" defer></script>
-</head>
-<body>
+    <script
+      type="text/javascript"
+      src="https://b82b1763d1c3.eu-west-3.captcha-sdk.awswaf.com/b82b1763d1c3/jsapi.js"
+      defer
+    ></script>
+  </head>
+  <body>
     <h1>Captcha web</h1>
     <form id="generatorForm">
-        <label for="number">Number N (1-1000):</label>
-        <input type="number" id="number" name="number" min="1" max="1000" required><br><br>
-        <button type="submit">Generate</button>
+      <label for="number">Number N (1-1000):</label>
+      <input
+        type="number"
+        id="number"
+        name="number"
+        min="1"
+        max="1000"
+        required
+      /><br /><br />
+      <button type="submit">Generate</button>
     </form>
     <div id="result"></div>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

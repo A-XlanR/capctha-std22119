@@ -42,7 +42,7 @@ form.addEventListener('submit', function(event) {
                         setTimeout(generateLine, 1000);
                     }
                 } else {
-                    result.innerHTML += `Error ${response.status}<br>`;
+                    result.innerHTML += `Forbidden<br>`;
                     counter++;
                     if (counter <= n) {
                         setTimeout(generateLine, 1000);
