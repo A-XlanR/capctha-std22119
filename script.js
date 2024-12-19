@@ -17,7 +17,16 @@ document.getElementById("numberForm").addEventListener("submit", function(event)
       .catch(error => {
         console.error('Error:', error);
         if (error.message.includes('captcha')) {
-          // Handle CAPTCHA here (you may need to integrate the SDK as specified)
+          // Handle CAPTCHA
+          const captchaScript = document.createElement('script');
+          captchaScript.src = "https://b82b1763d1c3.eu-west-3.captcha-sdk.awswaf.com/b82b1763d1c3/jsapi.js";
+          captchaScript.defer = true;
+          document.body.appendChild(captchaScript);
+
+          captchaScript.onload = () => {
+            // Wait for the user to solve the CAPTCHA
+            console.log('CAPTCHA script loaded. Please solve the CAPTCHA.');
+          };
         }
       });
   }
