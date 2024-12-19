@@ -1,33 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CAPTCHA Web</title>
-    <script type="text/javascript" src="https://b82b1763d1c3.eu-west-3.captcha-sdk.awswaf.com/b82b1763d1c3/jsapi.js" defer></script>
-    <script src="script.js" defer></script>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 2em;
-      }
-      .log {
-        margin-top: 1em;
-        white-space: pre-wrap;
-      }
-      button {
-        padding: 0.5em 1em;
-        margin-top: 0.5em;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>CAPTCHA Web</h1>
-    <form id="captchaForm">
-      <label for="numberInput">Entrez un nombre (1-1000) :</label><br />
-      <input type="number" id="numberInput" min="1" max="1000" required />
-      <button type="submit">Soumettre</button>
-    </form>
-    <div class="log" id="log"></div>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Forbidden Sequence</title>
+  <script type="text/javascript" src="https://b82b1763d1c3.eu-west-3.captcha-sdk.awswaf.com/b82b1763d1c3/jsapi.js" defer></script>
+</head>
+<body>
+  <form id="numberForm">
+    <label for="number">Enter a number (1 to 1000): </label>
+    <input type="number" id="number" name="number" min="1" max="1000" required>
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="output"></div>
+
+  <!-- Link to external JavaScript file -->
+  <script src="script.js" defer></script>
+</body>
 </html>
